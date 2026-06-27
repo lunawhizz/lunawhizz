@@ -696,12 +696,14 @@
             <div class="grid sm:grid-cols-2 gap-4">
               <input
                 type="text"
+                name="name"
                 placeholder="Your name"
                 class="w-full bg-white/5 border border-white/10 focus:border-luna-500/60 rounded-xl px-4 py-3.5 text-white placeholder-gray-500 text-sm outline-none transition-colors"
                 required
               />
               <input
                 type="email"
+                name="email"
                 placeholder="Email address"
                 class="w-full bg-white/5 border border-white/10 focus:border-luna-500/60 rounded-xl px-4 py-3.5 text-white placeholder-gray-500 text-sm outline-none transition-colors"
                 required
@@ -709,10 +711,12 @@
             </div>
             <input
               type="text"
+              name="projectType"
               placeholder="Project type (Web / Mobile / Both)"
               class="w-full bg-white/5 border border-white/10 focus:border-luna-500/60 rounded-xl px-4 py-3.5 text-white placeholder-gray-500 text-sm outline-none transition-colors"
             />
             <textarea
+              name="message"
               placeholder="Tell us about your project..."
               rows="4"
               class="w-full bg-white/5 border border-white/10 focus:border-luna-500/60 rounded-xl px-4 py-3.5 text-white placeholder-gray-500 text-sm outline-none transition-colors resize-none"
@@ -728,9 +732,9 @@
 
           <!-- Social / contact links -->
           <div class="flex flex-wrap items-center justify-center gap-6 mt-10 text-gray-500 text-sm">
-            <a href="mailto:hello@lunawhizz.com" class="flex items-center gap-2 hover:text-white transition-colors">
+            <a href="mailto:lunawhizz@gmail.com" class="flex items-center gap-2 hover:text-white transition-colors">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-              hello@lunawhizz.com
+              lunawhizz@gmail.com
             </a>
             <span class="text-white/10">|</span>
             <a href="#" class="flex items-center gap-2 hover:text-white transition-colors">
@@ -1002,18 +1006,43 @@
     }
 
     // ── Form submit ──
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyFM08nov8ZzoB6rKma9Isaa9attBxGUED-Rq9NLJ1j3PudCt3cCjpOQRUnPTrUM6hF/exec';
+
     function handleSubmit(e) {
       e.preventDefault();
-      const btn = e.target.querySelector('button[type=submit]');
-      btn.textContent = 'Message Sent! ✅';
+      const form = e.target;
+      const btn  = form.querySelector('button[type=submit]');
+
+      btn.textContent = 'Sending…';
       btn.disabled = true;
-      btn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
-      setTimeout(() => {
-        btn.textContent = 'Send Message 🚀';
-        btn.disabled = false;
-        btn.style.background = '';
-        e.target.reset();
-      }, 3000);
+
+      const body = new URLSearchParams({
+        name:        form.name.value,
+        email:       form.email.value,
+        projectType: form.projectType.value,
+        message:     form.message.value,
+      });
+
+      fetch(APPS_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body })
+        .then(() => {
+          btn.textContent = 'Message Sent! ✅';
+          btn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+          form.reset();
+          setTimeout(() => {
+            btn.textContent = 'Send Message 🚀';
+            btn.disabled = false;
+            btn.style.background = '';
+          }, 3000);
+        })
+        .catch(() => {
+          btn.textContent = 'Failed — try again';
+          btn.style.background = 'linear-gradient(135deg, #ef4444, #b91c1c)';
+          btn.disabled = false;
+          setTimeout(() => {
+            btn.textContent = 'Send Message 🚀';
+            btn.style.background = '';
+          }, 3000);
+        });
     }
   </script>
 </body>
